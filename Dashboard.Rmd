@@ -1,0 +1,179 @@
+---
+title: "US_Airnbnb"
+output:
+  flexdashboard::flex_dashboard:
+    theme: bootstrap
+---
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(plotly)
+library(rpivotTable)
+```
+
+```{r}
+Broward <- read.csv("Broward.csv")
+Dallas <- read.csv("Dallas.csv")
+Hawaii <- read.csv("Hawaii.csv")
+NY <- read.csv("NY.csv")
+SF <- read.csv("SF.csv")
+Seattle <- read.csv("Seattle.csv")
+
+```
+
+```{r}
+Broward1 <- read.csv("Broward_Neighbourhood.csv")
+Dallas1 <- read.csv("Dallas_Neighbourhood.csv")
+Hawaii1 <- read.csv("Hawaii_Neighbourhood.csv")
+NY1  <- read.csv("NY_Neighbourhood.csv")
+SF1  <- read.csv("SF_Neighbourhood.csv")
+Seattle1  <- read.csv("Seattle_Neighbourhood.csv")
+```
+Room Types
+==================================
+Column {.tabset .tabset-fade}
+----------------------------------
+### Aggregation
+```{r}
+B_E <- Broward[which(Broward$room_type == "Entire home/apt"),3]
+D_E <- Dallas[which(Dallas$room_type == "Entire home/apt"),3]
+H_E <- Hawaii[which(Hawaii$room_type == "Entire home/apt"),3]
+N_E <- NY[which(NY$room_type == "Entire home/apt"),3]
+SF_E <- SF[which(SF$room_type == "Entire home/apt"),3]
+Se_E <- Seattle[which(Seattle$room_type == "Entire home/apt"),3]
+E1<-c(B_E,D_E,H_E,N_E,SF_E,Se_E)
+
+
+B_H <- Broward[which(Broward$room_type == "Hotel room"),3]
+D_H <- Dallas[which(Dallas$room_type == "Hotel room"),3]
+H_H <- Hawaii[which(Hawaii$room_type == "Hotel room"),3]
+N_H <- NY[which(NY$room_type == "Hotel room"),3]
+SF_H <- SF[which(SF$room_type == "Hotel room"),3]
+Se_H <- Seattle[which(Seattle$room_type == "Hotel room"),3]
+H1<-c(B_H,D_H,H_H,N_H,SF_H,Se_H)
+
+
+B_P <- Broward[which(Broward$room_type == "Private room"),3]
+D_P <- Dallas[which(Dallas$room_type == "Private room"),3]
+H_P <- Hawaii[which(Hawaii$room_type == "Private room"),3]
+N_P <- NY[which(NY$room_type == "Private room"),3]
+SF_P <- SF[which(SF$room_type == "Private room"),3]
+Se_P <- Seattle[which(Seattle$room_type == "Private room"),3]
+P1<-c(B_P,D_P,H_P,N_P,SF_P,Se_P)
+
+  
+B_S <- Broward[which(Broward$room_type == "Shared room"),3]
+D_S <- Dallas[which(Dallas$room_type == "Shared room"),3]
+H_S <- Hawaii[which(Hawaii$room_type == "Shared room"),3]
+N_S <- NY[which(NY$room_type == "Shared room"),3]
+SF_S <- SF[which(SF$room_type == "Shared room"),3]
+Se_S <- Seattle[which(Seattle$room_type == "Shared room"),3]
+S1<- c(B_S,D_S,H_S,N_S,SF_S,Se_S)
+
+Cities <- c("Broward", "Dallas", "Hawaii","NY","San Francisco","Seattle")
+
+data <- data.frame(Cities, E1, H1, P1, S1)
+fig <- plot_ly(data, x = ~Cities, y = ~E1, type = 'bar',name="Entire home/apt",marker = list(line = list(color = 'rgb(8,48,107)', width = 0.1)))
+fig <- fig %>% add_trace(y = ~H1, name = 'Hotel room')
+fig <- fig %>% add_trace(y = ~P1, name = 'Private room')
+fig <- fig %>% add_trace(y = ~S1, name = 'Shared room')
+fig <- fig %>% layout( yaxis = list(title = 'Count'), barmode = 'stack')
+fig
+```
+### Price Average
+```{r, fig.width=6.3, fig.height=6.1}
+
+B_E <- Broward[which(Broward$room_type == "Entire home/apt"),2]
+D_E <- Dallas[which(Dallas$room_type == "Entire home/apt"),2]
+H_E <- Hawaii[which(Hawaii$room_type == "Entire home/apt"),2]
+N_E <- NY[which(NY$room_type == "Entire home/apt"),2]
+SF_E <- SF[which(SF$room_type == "Entire home/apt"),2]
+Se_E <- Seattle[which(Seattle$room_type == "Entire home/apt"),2]
+E1<-c(B_E,D_E,H_E,N_E,SF_E,Se_E)
+
+
+B_H <- Broward[which(Broward$room_type == "Hotel room"),2]
+D_H <- Dallas[which(Dallas$room_type == "Hotel room"),2]
+H_H <- Hawaii[which(Hawaii$room_type == "Hotel room"),2]
+N_H <- NY[which(NY$room_type == "Hotel room"),2]
+SF_H <- SF[which(SF$room_type == "Hotel room"),2]
+Se_H <- Seattle[which(Seattle$room_type == "Hotel room"),2]
+H1<-c(B_H,D_H,H_H,N_H,SF_H,Se_H)
+
+
+B_P <- Broward[which(Broward$room_type == "Private room"),2]
+D_P <- Dallas[which(Dallas$room_type == "Private room"),2]
+H_P <- Hawaii[which(Hawaii$room_type == "Private room"),2]
+N_P <- NY[which(NY$room_type == "Private room"),2]
+SF_P <- SF[which(SF$room_type == "Private room"),2]
+Se_P <- Seattle[which(Seattle$room_type == "Private room"),2]
+P1<-c(B_P,D_P,H_P,N_P,SF_P,Se_P)
+
+
+B_S <- Broward[which(Broward$room_type == "Shared room"),2]
+D_S <- Dallas[which(Dallas$room_type == "Shared room"),2]
+H_S <- Hawaii[which(Hawaii$room_type == "Shared room"),2]
+N_S <- NY[which(NY$room_type == "Shared room"),2]
+SF_S <- SF[which(SF$room_type == "Shared room"),2]
+Se_S <- Seattle[which(Seattle$room_type == "Shared room"),2]
+S1<- c(B_S,D_S,H_S,N_S,SF_S,Se_S)
+Cities <- c("Broward", "Dallas", "Hawaii","NY","San Francisco","Seattle")
+
+data <- data.frame(Cities, E1, H1, P1, S1)
+fig <- plot_ly(data, x = ~Cities,name="Entire home/apt", y = ~E1, type = 'bar',marker = list(line = list(color = 'rgb(8,48,107)', width = 1.2)))
+fig <- fig %>% add_trace(y = ~H1, name = 'Hotel room')
+fig <- fig %>% add_trace(y = ~P1, name = 'Private room')
+fig <- fig %>% add_trace(y = ~S1, name = 'Shared room')
+fig <- fig %>% layout(yaxis = list(title = '($)'), barmode = 'group')
+fig
+```
+Cities
+=============================
+Column{.tabset}
+-----------------------------
+### Broward
+```{r}
+Broward1$neighbourhood <- factor(Broward1$neighbourhood, levels = c(as.character(Broward1$neighbourhood)))
+figB <- plot_ly(Broward1 , x= ~neighbourhood, y=~Pice_Average, type='bar', textposition ="auto",marker = list(color=heat.colors(n=5),line = list(color = 'rgb(8,48,107)', width = 1.5)))
+figB <- figB %>% layout( yaxis = list(title = '($)'),xaxis = list(title = 'Neighbourhood'))
+figB
+```
+Column {.tabset}
+
+-------------------------------------
+### Dallas
+```{r}
+
+Dallas1$neighbourhood <- factor(Dallas1$neighbourhood, levels = c(as.character(Dallas1$neighbourhood)))
+figD <- plot_ly(Dallas1 , x= ~neighbourhood, y=~Pice_Average, type='bar', textposition ="auto",marker = list(color=heat.colors(n=5),line = list(color = 'rgb(8,48,107)', width = 1.5)))
+figD <- figD %>% layout( yaxis = list(title = '($)'),xaxis = list(title = 'Neighbourhood'))
+figD
+```
+### Hawaii
+```{r}
+Hawaii1$neighbourhood <- factor(Hawaii1$neighbourhood, levels = c(as.character(Hawaii1$neighbourhood)))
+figH <- plot_ly(Hawaii1 , x= ~neighbourhood, y=~Pice_Average, type='bar', textposition ="auto",marker = list(color=heat.colors(n=5),line = list(color = 'rgb(8,48,107)', width = 1.5)))
+figH <- figH %>% layout( yaxis = list(title = '($)'),xaxis = list(title = 'Neighbourhood'))
+figH
+```
+### New York
+```{r}
+NY1$neighbourhood <- factor(NY1$neighbourhood, levels = c(as.character(NY1$neighbourhood)))
+figNY <-plot_ly(NY1 , x= ~neighbourhood, y=~Pice_Average, type='bar', textposition ="auto",marker = list(color=heat.colors(n=5),line = list(color = 'rgb(8,48,107)', width = 1.5)))
+figNY <- figNY %>% layout( yaxis = list(title = '($)'),xaxis = list(title = 'Neighbourhood'))
+figNY
+```
+### San Francisco
+```{r}
+SF1$neighbourhood <- factor(SF1$neighbourhood, levels = c(as.character(SF1$neighbourhood)))
+figSF <- plot_ly(SF1 , x= ~neighbourhood, y=~Pice_Average, type='bar', textposition ="auto",marker = list(color=heat.colors(n=5),line = list(color = 'rgb(8,48,107)', width = 1.5)))
+figSF <- figSF %>% layout( yaxis = list(title = '($)'),xaxis = list(title = 'Neighbourhood'))
+figSF
+```
+###Seattle
+```{r}
+Seattle1$neighbourhood <- factor(Seattle1$neighbourhood, levels = c(as.character(Seattle1$neighbourhood)))
+figS <- plot_ly(Seattle1 , x= ~neighbourhood, y=~Pice_Average, type='bar', textposition ="auto",marker = list(color=heat.colors(n=5),line = list(color = 'rgb(8,48,107)', width = 1.5)))
+figS <- figS %>% layout( yaxis = list(title = '($)'),xaxis = list(title = 'Neighbourhood'))
+figS
+```
